@@ -1,0 +1,8 @@
+# Local, free target: DuckDB file in the repo root. Use with --profiles-dir local
+default:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: jaffle_shop.duckdb
+      threads: 4

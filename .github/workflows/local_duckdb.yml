@@ -1,0 +1,22 @@
+name: dbt-core + DuckDB build
+on:
+  push:
+    branches: [local-duckdb]
+  pull_request:
+    branches: [local-duckdb]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-local.txt
+      - run: dbt deps --profiles-dir local
+      # Seeds first: sources are not linked to the seeds in the DAG, so a single
+      # `dbt build` would run the staging models before the raw tables exist.
+      - run: |
+          dbt seed --profiles-dir local --vars '{"load_source_data": true}'
+      - run: |
+          dbt build --profiles-dir local --vars '{"load_source_data": true}'

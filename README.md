@@ -10,6 +10,19 @@ This README will guide you through setting up the project on dbt Cloud. Working 
 > [!NOTE]
 > This project is geared towards folks learning dbt Cloud with a cloud warehouse. If you're brand new to dbt, we recommend starting with the [dbt Learn](https://learn.getdbt.com/) platform. It's a free, interactive way to learn dbt, and it's a great way to get started if you're new to the tool. If you just want to try dbt locally as quickly as possible without setting up a data warehouse check out [`jaffle_shop_duckdb`](https://github.com/dbt-labs/jaffle_shop_duckdb).
 
+> [!IMPORTANT]
+> **`local-duckdb` branch: run this project for free on your own machine.** `main` needs dbt 2.0 (the Fusion engine, not on PyPI) and a cloud warehouse. This branch runs on open-source dbt-core 1.11 with DuckDB, no account needed:
+>
+> ```bash
+> python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+> pip install -r requirements-local.txt
+> dbt deps --profiles-dir local
+> dbt seed  --profiles-dir local --vars '{"load_source_data": true}'   # seeds first
+> dbt build --profiles-dir local --vars '{"load_source_data": true}'
+> ```
+>
+> Changes from `main`: `require-dbt-version` relaxed to `>=1.8.0`; a DuckDB profile in `local/profiles.yml`; the dbt 2.0 Semantic Layer YAML (`semantic_model`, `metrics`, `saved_queries`, column `entity`/`dimension`) removed, since dbt-core 1.x rejects the new spec; models, tests and seeds are unchanged. Run `dbt seed` before `dbt build`: sources are not linked to seeds in the DAG, so a single `build` runs the staging models before the raw tables exist. `.github/workflows/local_duckdb.yml` runs the same steps in CI.
+
 Ready to go? Grab some water and a nice snack, and let's dig in!
 
 <div>
