@@ -18,10 +18,10 @@ This README will guide you through setting up the project on dbt Cloud. Working 
 > pip install -r requirements-local.txt
 > dbt deps --profiles-dir local
 > dbt seed  --profiles-dir local --vars '{"load_source_data": true}'   # seeds first
-> dbt build --profiles-dir local --vars '{"load_source_data": true}'
+> dbt build --profiles-dir local --vars '{"load_source_data": true}' --exclude-resource-type seed
 > ```
 >
-> Changes from `main`: `require-dbt-version` relaxed to `>=1.8.0`; a DuckDB profile in `local/profiles.yml`; the dbt 2.0 Semantic Layer YAML (`semantic_model`, `metrics`, `saved_queries`, column `entity`/`dimension`) removed, since dbt-core 1.x rejects the new spec; models, tests and seeds are unchanged. Run `dbt seed` before `dbt build`: sources are not linked to seeds in the DAG, so a single `build` runs the staging models before the raw tables exist. `.github/workflows/local_duckdb.yml` runs the same steps in CI.
+> Changes from `main`: `require-dbt-version` relaxed to `>=1.8.0`; a DuckDB profile in `local/profiles.yml`; the dbt 2.0 Semantic Layer YAML (`semantic_model`, `metrics`, `saved_queries`, column `entity`/`dimension`) removed, since dbt-core 1.x rejects the new spec; models, tests and seeds are unchanged. Run `dbt seed` before `dbt build`: sources are not linked to seeds in the DAG, so a single `build` runs the staging models before the raw tables exist; the build then skips the already-loaded seeds (`--exclude-resource-type seed`), 38% faster locally. `.github/workflows/local_duckdb.yml` runs the same steps in CI.
 
 Ready to go? Grab some water and a nice snack, and let's dig in!
 

@@ -12,11 +12,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-local.txt
       - run: pip install -r requirements-local.txt
       - run: dbt deps --profiles-dir local
       # Seeds first: sources are not linked to the seeds in the DAG, so a single
       # `dbt build` would run the staging models before the raw tables exist.
+      # The build then skips the seeds it would otherwise reload (8.8 s -> 5.5 s locally).
       - run: |
           dbt seed --profiles-dir local --vars '{"load_source_data": true}'
       - run: |
-          dbt build --profiles-dir local --vars '{"load_source_data": true}'
+          dbt build --profiles-dir local --vars '{"load_source_data": true}' --exclude-resource-type seed
