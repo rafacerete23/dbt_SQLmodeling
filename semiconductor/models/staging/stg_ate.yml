@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: stg_ate__parts
+    columns:
+      - name: lot
+        data_tests: [not_null]
+      - name: part_index
+        data_tests: [not_null]
+      - name: passed
+        data_tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [lot, part_index]
+  - name: stg_ate__test_results
+    columns:
+      - name: lot
+        data_tests: [not_null]
+      - name: test_num
+        data_tests: [not_null]

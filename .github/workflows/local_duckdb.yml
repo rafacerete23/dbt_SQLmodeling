@@ -23,3 +23,30 @@ jobs:
           dbt seed --profiles-dir local --vars '{"load_source_data": true}'
       - run: |
           dbt build --profiles-dir local --vars '{"load_source_data": true}' --exclude-resource-type seed
+
+  wafer-sort:
+    # semiconductor/: dbt models over real wafer-sort test data, produced by
+    # ate-test-data-pipeline's STDF ingest.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: rafacerete23/ate-test-data-pipeline
+          path: ate-test-data-pipeline
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-local.txt
+      - run: pip install -r requirements-local.txt ./ate-test-data-pipeline
+      - name: Download the demo STDF files and ingest them to Parquet
+        working-directory: ate-test-data-pipeline
+        run: |
+          python scripts/get_sample_data.py
+          for lot in lot2 lot3; do python -m ate_pipeline.ingest data/raw/$lot.stdf --out data/parquet/$lot; done
+      - name: dbt build
+        working-directory: semiconductor
+        run: |
+          dbt deps --profiles-dir .
+          dbt build --profiles-dir . --vars '{"ate_parquet_dir": "../ate-test-data-pipeline/data/parquet"}'

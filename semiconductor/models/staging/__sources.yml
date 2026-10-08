@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: ate
+    description: Parquet tables from ate-test-data-pipeline's ingest step, one folder per lot.
+    meta:
+      external_location: "read_parquet('{{ var(\"ate_parquet_dir\") }}/*/{name}.parquet', filename = true)"
+    tables:
+      - name: parts
+        description: One row per test insertion (STDF PRR). A die tested twice has two rows.
+      - name: test_results
+        description: One row per parametric measurement (STDF PTR); only datalogged insertions have rows.

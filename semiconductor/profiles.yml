@@ -1,0 +1,7 @@
+wafer_sort:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: wafer_sort.duckdb
+      threads: 4

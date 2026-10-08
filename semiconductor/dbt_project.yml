@@ -1,0 +1,26 @@
+# Wafer-sort test analytics on the Parquet tables written by
+# https://github.com/rafacerete23/ate-test-data-pipeline (Phase 1 ingest).
+# Separate from the Jaffle Shop project: own profile, own DuckDB file.
+config-version: 2
+name: "wafer_sort"
+version: "0.1.0"
+require-dbt-version: ">=1.10.0"  # `arguments:` in generic tests
+profile: wafer_sort
+
+model-paths: ["models"]
+test-paths: ["tests"]
+target-path: "target"
+clean-targets: ["target"]
+
+vars:
+  # Directory with one sub-folder per lot (lot2/, lot3/ ...), each holding parts.parquet and test_results.parquet
+  ate_parquet_dir: "../../ate-test-data-pipeline/data/parquet"
+
+models:
+  wafer_sort:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table

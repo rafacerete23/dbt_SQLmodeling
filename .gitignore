@@ -20,3 +20,4 @@ dbt_internal_packages/
 *.duckdb
 *.duckdb.wal
 !local/profiles.yml
+!semiconductor/profiles.yml

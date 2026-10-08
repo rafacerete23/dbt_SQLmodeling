@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: dim_die
+    description: One row per physical die (lot, x, y) with its first-pass and final bin.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [lot, x, y]
+    columns:
+      - name: insertions
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+  - name: fct_lot_yield
+    columns:
+      - name: lot
+        data_tests: [unique, not_null]
+      - name: final_yield_pct
+        description: Retesting can only recover dies, so final >= first pass.
+        data_tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= first_pass_yield_pct"
+  - name: fct_bin_pareto
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [lot, hard_bin]
+    columns:
+      - name: recovered
+        data_tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "<= retested"
+  - name: fct_test_capability
+    columns:
+      - name: test_num
+        data_tests: [unique, not_null]
